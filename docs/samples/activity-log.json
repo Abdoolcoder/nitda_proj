@@ -1,0 +1,7 @@
+{
+  "user": "alice",
+  "action": "download",
+  "file_path": "/project-alpha/draft.docx",
+  "project": "project-alpha",
+  "timestamp": "2026-09-09T10:00:00Z"
+}

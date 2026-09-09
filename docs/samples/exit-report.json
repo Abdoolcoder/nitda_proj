@@ -1,0 +1,8 @@
+{
+  "user": "alice",
+  "projects": ["project-alpha"],
+  "files_accessed": ["/project-alpha/draft.docx"],
+  "external_shares_found": ["share-link-1"],
+  "actions_taken": ["revoked_access", "transferred_ownership", "disabled_share"],
+  "generated_at": "2026-09-09T12:00:00Z"
+}

@@ -1,0 +1,7 @@
+{
+  "user": "alice",
+  "rule_triggered": "spike_vs_baseline",
+  "evidence": "User downloaded 50 files in 1 hour, baseline is 2.",
+  "severity": "high",
+  "timestamp": "2026-09-09T10:05:00Z"
+}
