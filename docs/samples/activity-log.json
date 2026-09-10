@@ -1,7 +1,93 @@
-{
-  "user": "alice",
-  "action": "download",
-  "file_path": "/project-alpha/draft.docx",
-  "project": "project-alpha",
-  "timestamp": "2026-09-09T10:00:00Z"
-}
+[
+  {
+    "user": "bob",
+    "action": "download",
+    "file_path": "/project-alpha/draft1.docx",
+    "project": "project-alpha",
+    "timestamp": "2026-09-09T10:00:00Z"
+  },
+  {
+    "user": "bob",
+    "action": "view",
+    "file_path": "/project-alpha/draft2.docx",
+    "project": "project-alpha",
+    "timestamp": "2026-09-09T10:15:00Z"
+  },
+  {
+    "user": "alice",
+    "action": "download",
+    "file_path": "/project-beta/data1.csv",
+    "project": "project-beta",
+    "timestamp": "2026-09-09T11:00:00Z"
+  },
+  {
+    "user": "alice",
+    "action": "download",
+    "file_path": "/project-beta/data2.csv",
+    "project": "project-beta",
+    "timestamp": "2026-09-09T11:01:00Z"
+  },
+  {
+    "user": "alice",
+    "action": "download",
+    "file_path": "/project-beta/data3.csv",
+    "project": "project-beta",
+    "timestamp": "2026-09-09T11:02:00Z"
+  },
+  {
+    "user": "alice",
+    "action": "download",
+    "file_path": "/project-beta/data4.csv",
+    "project": "project-beta",
+    "timestamp": "2026-09-09T11:03:00Z"
+  },
+  {
+    "user": "alice",
+    "action": "download",
+    "file_path": "/project-beta/data5.csv",
+    "project": "project-beta",
+    "timestamp": "2026-09-09T11:04:00Z"
+  },
+  {
+    "user": "alice",
+    "action": "download",
+    "file_path": "/project-beta/data6.csv",
+    "project": "project-beta",
+    "timestamp": "2026-09-09T11:05:00Z"
+  },
+  {
+    "user": "carol",
+    "action": "download",
+    "file_path": "/project-gamma/patent_draft.pdf",
+    "project": "project-gamma",
+    "timestamp": "2026-09-09T14:00:00Z"
+  },
+  {
+    "user": "carol",
+    "action": "download",
+    "file_path": "/project-gamma/results.xlsx",
+    "project": "project-gamma",
+    "timestamp": "2026-09-09T14:05:00Z"
+  },
+  {
+    "user": "carol",
+    "action": "download",
+    "file_path": "/project-gamma/methods.docx",
+    "project": "project-gamma",
+    "timestamp": "2026-09-09T14:10:00Z"
+  },
+  {
+    "user": "carol",
+    "action": "download",
+    "file_path": "/project-gamma/raw_data.csv",
+    "project": "project-gamma",
+    "timestamp": "2026-09-09T14:15:00Z"
+  },
+  {
+    "user": "carol",
+    "action": "download",
+    "file_path": "/project-gamma/summary.pdf",
+    "project": "project-gamma",
+    "timestamp": "2026-09-09T14:20:00Z"
+  }
+]

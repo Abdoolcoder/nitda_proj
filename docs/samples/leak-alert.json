@@ -1,7 +1,23 @@
-{
-  "user": "alice",
-  "rule_triggered": "spike_vs_baseline",
-  "evidence": "User downloaded 50 files in 1 hour, baseline is 2.",
-  "severity": "high",
-  "timestamp": "2026-09-09T10:05:00Z"
-}
+[
+  {
+    "user": "alice",
+    "rule_triggered": "spike_vs_baseline",
+    "evidence": "User performed 3 views/downloads in 1 hour. Baseline is 1.",
+    "severity": "high",
+    "timestamp": "2026-09-09T11:02:00Z"
+  },
+  {
+    "user": "alice",
+    "rule_triggered": "spike_vs_baseline",
+    "evidence": "User performed 3 views/downloads in 1 hour. Baseline is 1.",
+    "severity": "high",
+    "timestamp": "2026-09-09T11:05:00Z"
+  },
+  {
+    "user": "carol",
+    "rule_triggered": "burst_near_departure",
+    "evidence": "User downloaded/viewed 5 files within 14 days of departure date (2026-09-15T00:00:00Z).",
+    "severity": "high",
+    "timestamp": "2026-09-09T14:20:00Z"
+  }
+]
