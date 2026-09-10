@@ -3,10 +3,153 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Secure Research Collaboration Workspace</title>
+    <title>Secure Research Workspace</title>
+    <!-- Modern typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>Secure Research Collaboration Workspace</h1>
-    <p>Dashboard stub.</p>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="logo">
+                <div class="logo-icon"></div>
+                <h2>SecuResearch</h2>
+            </div>
+            <ul class="nav-links">
+                <li class="active"><a href="#">Overview</a></li>
+                <li><a href="#">Projects</a></li>
+                <li><a href="#">Team Members</a></li>
+                <li><a href="#">Settings</a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <header class="topbar">
+                <h1>Workspace Dashboard</h1>
+                <div class="user-profile">Admin</div>
+            </header>
+
+            <div class="dashboard-grid">
+                
+                <!-- Security Alerts Panel -->
+                <section class="panel alerts-panel glass">
+                    <h2><span class="icon">⚠️</span> Critical Alerts</h2>
+                    <div class="alert-list">
+                        {% for alert in alerts %}
+                        <div class="alert-card severity-{{ alert.severity }}">
+                            <div class="alert-header">
+                                <span class="badge">{{ alert.rule_triggered | replace('_', ' ') | title }}</span>
+                                <span class="time">{{ alert.timestamp.split('T')[0] }}</span>
+                            </div>
+                            <p class="evidence">{{ alert.evidence }}</p>
+                            <div class="user">Target: <strong>{{ alert.user }}</strong></div>
+                        </div>
+                        {% else %}
+                        <p class="empty-state">No critical alerts detected.</p>
+                        {% endfor %}
+                    </div>
+                </section>
+
+                <!-- Activity Feed Panel -->
+                <section class="panel activity-panel glass">
+                    <h2>Recent Activity</h2>
+                    <ul class="feed">
+                        {% for activity in activities[-8:]|reverse %}
+                        <li class="feed-item">
+                            <div class="feed-icon {{ activity.action }}">{{ activity.action[0]|upper }}</div>
+                            <div class="feed-details">
+                                <p><strong>{{ activity.user }}</strong> {{ activity.action }}ed <em>{{ activity.file_path.split('/')[-1] }}</em></p>
+                                <span class="time">{{ activity.timestamp.split('T')[1][:5] }}</span>
+                            </div>
+                        </li>
+                        {% else %}
+                        <p class="empty-state">No recent activity.</p>
+                        {% endfor %}
+                    </ul>
+                </section>
+
+                <!-- Exit Protocol Tool -->
+                <section class="panel exit-panel glass">
+                    <h2>Offboarding & Exit Protocol</h2>
+                    <p class="desc">Instantly audit and revoke access across all Nextcloud groups for a departing researcher.</p>
+                    
+                    <div class="exit-actions">
+                        <input type="text" id="target-user" placeholder="Enter username (e.g. carol)" value="carol">
+                        <button id="btn-trigger" class="btn primary">Trigger Lockdown</button>
+                    </div>
+
+                    <div id="report-container" class="report-container hidden">
+                        <h3>Exit Report Generated</h3>
+                        <div class="report-details">
+                            <p><strong>User:</strong> <span id="r-user"></span></p>
+                            <p><strong>Projects Locked:</strong> <span id="r-projects"></span></p>
+                            <p><strong>Files Secured:</strong> <span id="r-files"></span></p>
+                            <p><strong>Actions Taken:</strong></p>
+                            <ul id="r-actions" class="action-list"></ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Secure Share UI -->
+                <section class="panel share-panel glass">
+                    <h2>Create Secure External Share</h2>
+                    <form class="share-form" onsubmit="event.preventDefault(); alert('Share link generated securely.');">
+                        <div class="form-group">
+                            <label>File to share</label>
+                            <select>
+                                <option>/project-alpha/draft.docx</option>
+                                <option>/project-gamma/patent_draft.pdf</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Expiry Date</label>
+                            <input type="date" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Access Password</label>
+                            <input type="password" placeholder="Leave blank to auto-generate">
+                        </div>
+                        <button type="submit" class="btn secondary">Generate Secure Link</button>
+                    </form>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.getElementById('btn-trigger').addEventListener('click', async () => {
+            const btn = document.getElementById('btn-trigger');
+            btn.innerText = 'Locking down...';
+            btn.disabled = true;
+
+            // Simulate slight network delay
+            setTimeout(async () => {
+                const res = await fetch('/api/trigger_exit', { method: 'POST' });
+                const data = await res.json();
+                
+                if(data.status === 'success') {
+                    const r = data.report;
+                    document.getElementById('r-user').innerText = r.user;
+                    document.getElementById('r-projects').innerText = r.projects.join(', ');
+                    document.getElementById('r-files').innerText = r.files_accessed.length + ' recent files';
+                    
+                    const actionsList = document.getElementById('r-actions');
+                    actionsList.innerHTML = '';
+                    r.actions_taken.forEach(action => {
+                        const li = document.createElement('li');
+                        li.innerText = '✅ ' + action.replace('_', ' ').toUpperCase();
+                        actionsList.appendChild(li);
+                    });
+
+                    document.getElementById('report-container').classList.remove('hidden');
+                    btn.innerText = 'Lockdown Complete';
+                    btn.classList.add('success');
+                }
+            }, 800);
+        });
+    </script>
 </body>
 </html>
