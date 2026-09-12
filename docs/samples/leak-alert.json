@@ -1,5 +1,12 @@
 [
   {
+    "user": "bob",
+    "rule_triggered": "unauthorized_external_share",
+    "evidence": "User created an external share link for /project-alpha/confidential_draft.pdf.",
+    "severity": "high",
+    "timestamp": "2026-09-09T10:30:00Z"
+  },
+  {
     "user": "alice",
     "rule_triggered": "spike_vs_baseline",
     "evidence": "User performed 3 views/downloads in 1 hour. Baseline is 1.",

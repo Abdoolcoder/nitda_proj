@@ -13,6 +13,7 @@ def detect_leaks(events, baselines, departure_dates):
     Rules:
     1. Spike vs Baseline: Views/downloads in a short window (e.g. 1 hour) exceed historical baseline by 3x.
     2. Burst Near Departure: Burst of activity (>= 5 files) within 14 days of a known departure date.
+    3. External Sharing: Unauthorized external share link creation.
     
     Inputs:
     - events: List of dictionaries representing activity events.
@@ -42,7 +43,18 @@ def detect_leaks(events, baselines, departure_dates):
         if not user or not action or not timestamp_str:
             continue
             
-        # We only care about data exfiltration actions: view, download
+        # Rule 3: Unauthorized External Share
+        if action == 'share_external':
+            alerts.append({
+                "user": user,
+                "rule_triggered": "unauthorized_external_share",
+                "evidence": f"User created an external share link for {event.get('file_path')}.",
+                "severity": "high",
+                "timestamp": timestamp_str
+            })
+            continue
+
+        # We only care about data exfiltration actions for Rule 1 & 2: view, download
         if action not in ['view', 'download']:
             continue
             

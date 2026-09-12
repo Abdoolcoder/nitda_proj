@@ -19,12 +19,12 @@ def index():
     # Load data from the API contracts
     activity_log = load_json('activity-log.json')
     leak_alerts = load_json('leak-alert.json')
-    exit_report = load_json('exit-report.json')
+    shares = load_json('external-shares.json')
     
     return render_template('index.html', 
                            activities=activity_log, 
                            alerts=leak_alerts, 
-                           exit_report=exit_report)
+                           shares=shares)
 
 @app.route('/api/trigger_exit', methods=['POST'])
 def trigger_exit():
@@ -32,6 +32,25 @@ def trigger_exit():
     # Here, we just return the pre-generated exit-report.json
     report = load_json('exit-report.json')
     return jsonify({"status": "success", "report": report})
+
+@app.route('/api/create_share', methods=['POST'])
+def create_share():
+    data = request.json
+    shares = load_json('external-shares.json')
+    if not isinstance(shares, list):
+        shares = []
+    shares.append({
+        "file": data.get('file'),
+        "recipient": data.get('recipient'),
+        "expiry": data.get('expiry')
+    })
+    
+    base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+    path = os.path.join(base_dir, 'docs', 'samples', 'external-shares.json')
+    with open(path, 'w') as f:
+        json.dump(shares, f, indent=2)
+        
+    return jsonify({"status": "success"})
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

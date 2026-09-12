@@ -5,150 +5,155 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Secure Research Workspace</title>
     <!-- Modern typography -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <div class="app-container">
-        <!-- Sidebar Navigation -->
-        <nav class="sidebar">
-            <div class="logo">
-                <div class="logo-icon"></div>
-                <h2>SecuResearch</h2>
-            </div>
-            <ul class="nav-links">
-                <li class="active"><a href="#">Overview</a></li>
-                <li><a href="#">Projects</a></li>
-                <li><a href="#">Team Members</a></li>
-                <li><a href="#">Settings</a></li>
-            </ul>
-        </nav>
+    <!-- Top Navigation Bar -->
+    <header class="header">
+        <h1>
+            <div class="header-logo"></div>
+            Secure Research Workspace
+        </h1>
+        <div class="user-badge">Supervisor Dashboard</div>
+    </header>
 
-        <!-- Main Content Area -->
-        <main class="main-content">
-            <header class="topbar">
-                <h1>Workspace Dashboard</h1>
-                <div class="user-profile">Admin</div>
-            </header>
-
-            <div class="dashboard-grid">
-                
-                <!-- Security Alerts Panel -->
-                <section class="panel alerts-panel glass">
-                    <h2><span class="icon">⚠️</span> Critical Alerts</h2>
-                    <div class="alert-list">
-                        {% for alert in alerts %}
-                        <div class="alert-card severity-{{ alert.severity }}">
-                            <div class="alert-header">
-                                <span class="badge">{{ alert.rule_triggered | replace('_', ' ') | title }}</span>
-                                <span class="time">{{ alert.timestamp.split('T')[0] }}</span>
-                            </div>
-                            <p class="evidence">{{ alert.evidence }}</p>
-                            <div class="user">Target: <strong>{{ alert.user }}</strong></div>
+    <!-- Main Two-Column Grid -->
+    <main class="main-container">
+        
+        <!-- Left Column (2/3 width): Live Alert Feed -->
+        <section class="left-col">
+            <h2>Live Alert Feed</h2>
+            
+            <div class="alert-feed">
+                {% for alert in alerts|reverse %}
+                <div class="alert-card severity-{{ alert.severity }}">
+                    <div class="alert-header">
+                        <div>
+                            <span class="alert-user">{{ alert.user }}</span>
+                            <span class="alert-rule"> | {{ alert.rule_triggered | replace('_', ' ') }}</span>
                         </div>
-                        {% else %}
-                        <p class="empty-state">No critical alerts detected.</p>
-                        {% endfor %}
+                        <span class="alert-timestamp">{{ alert.timestamp.replace('T', ' ').replace('Z', '') }}</span>
                     </div>
-                </section>
-
-                <!-- Activity Feed Panel -->
-                <section class="panel activity-panel glass">
-                    <h2>Recent Activity</h2>
-                    <ul class="feed">
-                        {% for activity in activities[-8:]|reverse %}
-                        <li class="feed-item">
-                            <div class="feed-icon {{ activity.action }}">{{ activity.action[0]|upper }}</div>
-                            <div class="feed-details">
-                                <p><strong>{{ activity.user }}</strong> {{ activity.action }}ed <em>{{ activity.file_path.split('/')[-1] }}</em></p>
-                                <span class="time">{{ activity.timestamp.split('T')[1][:5] }}</span>
-                            </div>
-                        </li>
-                        {% else %}
-                        <p class="empty-state">No recent activity.</p>
-                        {% endfor %}
-                    </ul>
-                </section>
-
-                <!-- Exit Protocol Tool -->
-                <section class="panel exit-panel glass">
-                    <h2>Offboarding & Exit Protocol</h2>
-                    <p class="desc">Instantly audit and revoke access across all Nextcloud groups for a departing researcher.</p>
                     
-                    <div class="exit-actions">
-                        <input type="text" id="target-user" placeholder="Enter username (e.g. carol)" value="carol">
-                        <button id="btn-trigger" class="btn primary">Trigger Lockdown</button>
+                    <p class="alert-evidence">{{ alert.evidence }}</p>
+                    
+                    <!-- Run Exit Protocol Button directly inside the card -->
+                    <div class="alert-action">
+                        <button class="btn btn-danger trigger-lockdown-btn" data-user="{{ alert.user }}">Run Exit Protocol</button>
                     </div>
 
-                    <div id="report-container" class="report-container hidden">
-                        <h3>Exit Report Generated</h3>
-                        <div class="report-details">
-                            <p><strong>User:</strong> <span id="r-user"></span></p>
-                            <p><strong>Projects Locked:</strong> <span id="r-projects"></span></p>
-                            <p><strong>Files Secured:</strong> <span id="r-files"></span></p>
-                            <p><strong>Actions Taken:</strong></p>
-                            <ul id="r-actions" class="action-list"></ul>
-                        </div>
+                    <!-- Hidden report div that will populate when lockdown finishes -->
+                    <div class="report-overlay hidden" id="report-{{ alert.user }}">
+                        <strong>Lockdown Complete</strong>
+                        <div class="report-text"></div>
                     </div>
-                </section>
-
-                <!-- Secure Share UI -->
-                <section class="panel share-panel glass">
-                    <h2>Create Secure External Share</h2>
-                    <form class="share-form" onsubmit="event.preventDefault(); alert('Share link generated securely.');">
-                        <div class="form-group">
-                            <label>File to share</label>
-                            <select>
-                                <option>/project-alpha/draft.docx</option>
-                                <option>/project-gamma/patent_draft.pdf</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Expiry Date</label>
-                            <input type="date" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Access Password</label>
-                            <input type="password" placeholder="Leave blank to auto-generate">
-                        </div>
-                        <button type="submit" class="btn secondary">Generate Secure Link</button>
-                    </form>
-                </section>
-
+                </div>
+                {% else %}
+                <div class="card">
+                    <p style="color: var(--text-muted); text-align: center;">No active security alerts.</p>
+                </div>
+                {% endfor %}
             </div>
-        </main>
-    </div>
+        </section>
+
+        <!-- Right Column (1/3 width): System Status & Sharing -->
+        <section class="right-col">
+            
+            <!-- Secure Share UI -->
+            <div class="card">
+                <h2>Create Secure External Share</h2>
+                <form id="share-form">
+                    <div class="form-group">
+                        <label>File to share</label>
+                        <select class="form-control" name="file" required>
+                            <option value="/project-alpha/draft.docx">/project-alpha/draft.docx</option>
+                            <option value="/project-gamma/patent_draft.pdf">/project-gamma/patent_draft.pdf</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Recipient Email</label>
+                        <input type="email" class="form-control" name="recipient" required placeholder="partner@university.edu">
+                    </div>
+                    <div class="form-group">
+                        <label>Expiry Date</label>
+                        <input type="date" class="form-control" name="expiry" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Generate Secure Link</button>
+                </form>
+            </div>
+
+            <!-- Share Audit Log -->
+            <div class="card">
+                <h2>Share Audit Log</h2>
+                <ul class="audit-list" id="audit-list">
+                    {% for share in shares|reverse %}
+                    <li class="audit-item">
+                        <strong>{{ share.recipient }}</strong> was granted access to <em>{{ share.file.split('/')[-1] }}</em>
+                        <span class="audit-time">Expires: {{ share.expiry }}</span>
+                    </li>
+                    {% else %}
+                    <li class="audit-item" style="color: var(--text-muted);">No external shares tracked yet.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+        </section>
+    </main>
 
     <script>
-        document.getElementById('btn-trigger').addEventListener('click', async () => {
-            const btn = document.getElementById('btn-trigger');
-            btn.innerText = 'Locking down...';
-            btn.disabled = true;
-
-            // Simulate slight network delay
-            setTimeout(async () => {
-                const res = await fetch('/api/trigger_exit', { method: 'POST' });
-                const data = await res.json();
+        // Handle Exit Protocol trigger inside cards
+        document.querySelectorAll('.trigger-lockdown-btn').forEach(button => {
+            button.addEventListener('click', async (e) => {
+                const btn = e.target;
+                const user = btn.getAttribute('data-user');
                 
-                if(data.status === 'success') {
-                    const r = data.report;
-                    document.getElementById('r-user').innerText = r.user;
-                    document.getElementById('r-projects').innerText = r.projects.join(', ');
-                    document.getElementById('r-files').innerText = r.files_accessed.length + ' recent files';
-                    
-                    const actionsList = document.getElementById('r-actions');
-                    actionsList.innerHTML = '';
-                    r.actions_taken.forEach(action => {
-                        const li = document.createElement('li');
-                        li.innerText = '✅ ' + action.replace('_', ' ').toUpperCase();
-                        actionsList.appendChild(li);
-                    });
+                btn.innerText = 'Locking down...';
+                btn.disabled = true;
 
-                    document.getElementById('report-container').classList.remove('hidden');
-                    btn.innerText = 'Lockdown Complete';
-                    btn.classList.add('success');
-                }
-            }, 800);
+                // Simulate slight network delay
+                setTimeout(async () => {
+                    const res = await fetch('/api/trigger_exit', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({ user: user })
+                    });
+                    const data = await res.json();
+                    
+                    if(data.status === 'success') {
+                        const r = data.report;
+                        const reportDiv = document.getElementById(`report-${user}`);
+                        const textDiv = reportDiv.querySelector('.report-text');
+                        
+                        textDiv.innerHTML = `
+                            Projects Locked: ${r.projects.length} <br>
+                            Actions Taken: ${r.actions_taken.join(', ')}
+                        `;
+                        
+                        reportDiv.classList.remove('hidden');
+                        btn.style.display = 'none'; // Hide button after success
+                    }
+                }, 600);
+            });
+        });
+
+        // Handle Secure Share Form
+        document.getElementById('share-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+
+            const res = await fetch('/api/create_share', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            });
+            const result = await res.json();
+            
+            if(result.status === 'success') {
+                alert('Secure link generated and logged to audit trail!');
+                window.location.reload(); // Reload to show updated audit log
+            }
         });
     </script>
 </body>
