@@ -1,18 +1,16 @@
 #!/bin/bash
-# Provisioning script for Nextcloud
-# Given a project name, creates a folder and matching group.
+# create_project.sh - provisions Nextcloud demo project
 
-PROJECT_NAME=$1
+OCC="docker compose exec --user www-data app php occ"
 
-if [ -z "$PROJECT_NAME" ]; then
-  echo "Usage: ./create_project.sh <project_name>"
-  exit 1
-fi
+echo "Creating Research Project..."
 
-echo "Creating group: $PROJECT_NAME"
-# docker exec --user www-data nextcloud-app occ group:add "$PROJECT_NAME"
+# Create a group for the project
+$OCC group:add "Project Alpha" || true
 
-echo "Creating folder for project: $PROJECT_NAME"
-# docker exec --user www-data nextcloud-app occ groupfolders:create "$PROJECT_NAME"
+# Add users to the group
+$OCC group:adduser "Project Alpha" dr_amara || true
+$OCC group:adduser "Project Alpha" researcher_bello || true
+$OCC group:adduser "Project Alpha" student_musa || true
 
-echo "Done."
+echo "Project Alpha created and users assigned."
