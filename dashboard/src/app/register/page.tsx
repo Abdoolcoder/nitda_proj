@@ -70,8 +70,9 @@ export default function Register() {
             type="password" 
             value={password}
             onChange={e => setPassword(e.target.value)}
-            placeholder="Min 8 characters" 
+            placeholder="Min 10 characters" 
             required 
+            minLength={10}
             className="w-full border border-slate-300 rounded p-2 text-sm" 
           />
         </div>

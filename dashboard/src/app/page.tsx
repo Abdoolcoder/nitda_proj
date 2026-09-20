@@ -4,47 +4,74 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
-  const [user, setUser] = useState("admin");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [status, setStatus] = useState({ loading: false, error: "" });
   const router = useRouter();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (typeof window !== "undefined") {
-      localStorage.setItem("demoUser", user);
-      window.location.href = "/project";
+    setStatus({ loading: true, error: "" });
+
+    try {
+      const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+
+      const data = await res.json();
+      
+      if (!res.ok) throw new Error(data.error || 'Authentication failed');
+      
+      // Success!
+      if (typeof window !== "undefined") {
+        localStorage.setItem("demoUser", username);
+        window.location.href = "/project";
+      }
+    } catch (err: any) {
+      setStatus({ loading: false, error: err.message });
     }
   };
 
   return (
     <div className="max-w-md mx-auto mt-20 bg-white p-10 rounded-lg shadow-sm border border-slate-200">
-      <h1 className="text-2xl font-bold mb-6 text-slate-800">Welcome</h1>
-      <form onSubmit={handleLogin} className="flex flex-col gap-4">
-        <label className="text-sm font-semibold text-slate-700">Select User</label>
-        <select 
-          className="border border-slate-300 rounded p-3 text-slate-700 focus:outline-none focus:border-blue-500"
-          value={user}
-          onChange={(e) => setUser(e.target.value)}
-        >
-          <option value="admin">System Admin</option>
-          <option value="dr_amara">Dr. Amara (Project Alpha)</option>
-          <option value="dr_sarah">Dr. Sarah (Project Beta)</option>
-          <option value="student_musa">Student Musa</option>
-          <option value="student_john">Student John</option>
-        </select>
+      <h1 className="text-2xl font-bold mb-2 text-slate-800">Secure Vault Access</h1>
+      <p className="text-slate-500 text-sm mb-6">Authenticate via Nextcloud SSO</p>
 
-        <label className="text-sm font-semibold text-slate-700 mt-2">Vault Password</label>
-        <input 
-          type="password" 
-          required 
-          placeholder="Enter secure password"
-          className="border border-slate-300 rounded p-3 text-slate-700 focus:outline-none focus:border-blue-500"
-        />
+      {status.error && <div className="bg-red-50 text-red-700 p-3 rounded text-sm mb-4 border border-red-200">{status.error}</div>}
+
+      <form onSubmit={handleLogin} className="flex flex-col gap-4">
+        <div>
+          <label className="block text-sm font-semibold text-slate-700 mb-1">Username</label>
+          <input 
+            type="text" 
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required 
+            placeholder="e.g. admin or dr_amara"
+            className="w-full border border-slate-300 rounded p-3 text-slate-700 focus:outline-none focus:border-blue-500"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-semibold text-slate-700 mb-1">Vault Password</label>
+          <input 
+            type="password" 
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required 
+            placeholder="Enter secure password"
+            className="w-full border border-slate-300 rounded p-3 text-slate-700 focus:outline-none focus:border-blue-500"
+          />
+        </div>
 
         <button 
           type="submit" 
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg transition-colors mt-2"
+          disabled={status.loading}
+          className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white font-medium py-3 rounded-lg transition-colors mt-2"
         >
-          Authenticate
+          {status.loading ? "Authenticating..." : "Authenticate"}
         </button>
       </form>
 
