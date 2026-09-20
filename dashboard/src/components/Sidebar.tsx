@@ -32,14 +32,9 @@ export default function Sidebar() {
       <nav className="flex flex-col gap-4 text-sm font-medium">
         <Link href="/" className="text-slate-400 hover:text-blue-600 transition-colors text-xs">← Switch User</Link>
         <Link href="/project" className="text-slate-600 hover:text-blue-600 transition-colors">Project Overview</Link>
-        
-        {isAdmin && (
-          <>
-            <Link href="/activity" className="text-slate-600 hover:text-blue-600 transition-colors">Activity & Alerts</Link>
-            <Link href="/exit" className="text-slate-600 hover:text-blue-600 transition-colors">Exit Protocol</Link>
-            <Link href="/share" className="text-slate-600 hover:text-blue-600 transition-colors">External Sharing</Link>
-          </>
-        )}
+        <Link href="/activity" className="text-slate-600 hover:text-blue-600 transition-colors">Activity & Alerts</Link>
+        <Link href="/exit" className="text-slate-600 hover:text-blue-600 transition-colors">Exit Protocol</Link>
+        <Link href="/share" className="text-slate-600 hover:text-blue-600 transition-colors">External Sharing</Link>
       </nav>
     </aside>
   );

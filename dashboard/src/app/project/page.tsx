@@ -125,6 +125,7 @@ export default function ProjectOverview() {
           <h3 className="font-medium text-slate-900 mb-3 border-b pb-2">Members</h3>
           <ul className="space-y-3">
             <li className="flex justify-between text-sm"><span className="font-semibold text-slate-700">You ({currentUser})</span> <span className="text-slate-500 bg-slate-100 px-2 py-0.5 rounded">Owner</span></li>
+            <li className="flex justify-between text-sm"><span className="font-semibold text-slate-700">Dr. Sarah</span> <span className="text-slate-500 bg-slate-100 px-2 py-0.5 rounded">Shared Space</span></li>
           </ul>
         </div>
         <div>
