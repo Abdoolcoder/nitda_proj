@@ -71,6 +71,9 @@ export async function GET(request: Request) {
     });
   } catch (error: any) {
     console.error("Download Error:", error);
+    if (error.code === 'EISDIR' || error.message.includes('EISDIR') || error.message.includes('directory')) {
+       return NextResponse.json({ error: 'This is a folder/directory, not a file. It cannot be opened in the text editor.' }, { status: 400 });
+    }
     return NextResponse.json({ error: 'Failed to retrieve file from backend' }, { status: 500 });
   }
 }

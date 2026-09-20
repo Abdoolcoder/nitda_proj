@@ -21,6 +21,26 @@ export async function POST(request: Request) {
     const match = stdout.match(/https?:\/\/[^\s]+/);
     const url = match ? match[0] : 'Link created, check Nextcloud';
 
+    // Log the activity manually
+    try {
+      const activity = {
+        user,
+        type: 'public_link_created',
+        subject: `Shared file externally: ${filename}`,
+        datetime: new Date().toISOString()
+      };
+      const fs = require('fs');
+      const alertsPath = path.join(process.cwd(), '..', 'infra', 'nextjs-activity.json');
+      let existingActivity = [];
+      if (fs.existsSync(alertsPath)) {
+        existingActivity = JSON.parse(fs.readFileSync(alertsPath, 'utf8'));
+      }
+      existingActivity.unshift(activity);
+      fs.writeFileSync(alertsPath, JSON.stringify(existingActivity, null, 2));
+    } catch (e) {
+      console.error("Failed to log activity:", e);
+    }
+
     return NextResponse.json({ success: true, url, message: 'Share link generated!' });
   } catch (error: any) {
     console.error("Share Error:", error);

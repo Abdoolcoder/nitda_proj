@@ -13,17 +13,23 @@ export async function GET() {
     
     // Merge Next.js custom API alerts
     let apiAlerts: any[] = [];
+    let apiActivity: any[] = [];
     try {
       const fs = require('fs');
       const alertsPath = path.join(process.cwd(), '..', 'infra', 'nextjs-alerts.json');
       if (fs.existsSync(alertsPath)) {
         apiAlerts = JSON.parse(fs.readFileSync(alertsPath, 'utf8'));
       }
+      
+      const activityPath = path.join(process.cwd(), '..', 'infra', 'nextjs-activity.json');
+      if (fs.existsSync(activityPath)) {
+        apiActivity = JSON.parse(fs.readFileSync(activityPath, 'utf8'));
+      }
     } catch(e) {}
 
     return NextResponse.json({ 
       alerts: [...apiAlerts, ...(data.alerts || [])], 
-      raw_activity: data.raw_activity 
+      raw_activity: [...apiActivity, ...(data.raw_activity || [])]
     });
   } catch (error) {
     console.error(error);

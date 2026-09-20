@@ -1,0 +1,68 @@
+[
+  {
+    "user": "student_musa",
+    "timestamp": "2026-09-20T21:22:12.649Z",
+    "rule_triggered": "UNAUTHORIZED_VIEW_ATTEMPT",
+    "evidence": "User student_musa attempted to view file: projectXeta via Dashboard API."
+  },
+  {
+    "user": "student_musa",
+    "timestamp": "2026-09-20T21:20:43.199Z",
+    "rule_triggered": "UNAUTHORIZED_VIEW_ATTEMPT",
+    "evidence": "User student_musa attempted to view file: projectXeta via Dashboard API."
+  },
+  {
+    "user": "student_musa",
+    "timestamp": "2026-09-20T21:20:40.936Z",
+    "rule_triggered": "UNAUTHORIZED_VIEW_ATTEMPT",
+    "evidence": "User student_musa attempted to view file: projectXeta via Dashboard API."
+  },
+  {
+    "user": "student_musa",
+    "timestamp": "2026-09-20T21:20:16.705Z",
+    "rule_triggered": "UNAUTHORIZED_VIEW_ATTEMPT",
+    "evidence": "User student_musa attempted to view file: New Text Document (2).txt via Dashboard API."
+  },
+  {
+    "user": "student_musa",
+    "timestamp": "2026-09-20T21:20:14.758Z",
+    "rule_triggered": "UNAUTHORIZED_VIEW_ATTEMPT",
+    "evidence": "User student_musa attempted to view file: projectXeta via Dashboard API."
+  },
+  {
+    "user": "student_musa",
+    "timestamp": "2026-09-20T21:20:12.845Z",
+    "rule_triggered": "UNAUTHORIZED_VIEW_ATTEMPT",
+    "evidence": "User student_musa attempted to view file: New Text Document (2).txt via Dashboard API."
+  },
+  {
+    "user": "student_musa",
+    "timestamp": "2026-09-20T21:19:13.102Z",
+    "rule_triggered": "UNAUTHORIZED_VIEW_ATTEMPT",
+    "evidence": "User student_musa attempted to view file: New Text Document (2).txt via Dashboard API."
+  },
+  {
+    "user": "student_musa",
+    "timestamp": "2026-09-20T21:19:11.791Z",
+    "rule_triggered": "UNAUTHORIZED_VIEW_ATTEMPT",
+    "evidence": "User student_musa attempted to view file: New Text Document (2).txt via Dashboard API."
+  },
+  {
+    "user": "student_musa",
+    "timestamp": "2026-09-20T21:02:56.523Z",
+    "rule_triggered": "UNAUTHORIZED_VIEW_ATTEMPT",
+    "evidence": "User student_musa attempted to view file: New Text Document (2).txt via Dashboard API."
+  },
+  {
+    "user": "student_musa",
+    "timestamp": "2026-09-20T20:59:17.621Z",
+    "rule_triggered": "UNAUTHORIZED_VIEW_ATTEMPT",
+    "evidence": "User student_musa attempted to view file: New Text Document (2).txt via Dashboard API."
+  },
+  {
+    "user": "student_musa",
+    "timestamp": "2026-09-20T20:59:05.313Z",
+    "rule_triggered": "UNAUTHORIZED_VIEW_ATTEMPT",
+    "evidence": "User student_musa attempted to view file: New Text Document (2).txt via Dashboard API."
+  }
+]

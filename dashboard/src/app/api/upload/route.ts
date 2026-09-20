@@ -35,6 +35,26 @@ export async function POST(request: Request) {
     // 3. Force Nextcloud to scan the new file into its database
     await execAsync(`docker compose exec -T --user www-data app php occ files:scan --path="${user}/files"`, { cwd: '../infra' });
 
+    // 4. Log the activity manually since occ files:scan doesn't trigger Nextcloud WebDAV events
+    try {
+      const activity = {
+        user,
+        type: 'file_created_or_updated',
+        subject: `Uploaded/Edited file: ${file.name}`,
+        datetime: new Date().toISOString()
+      };
+      const fs = require('fs');
+      const alertsPath = path.join(process.cwd(), '..', 'infra', 'nextjs-activity.json');
+      let existingActivity = [];
+      if (fs.existsSync(alertsPath)) {
+        existingActivity = JSON.parse(fs.readFileSync(alertsPath, 'utf8'));
+      }
+      existingActivity.unshift(activity);
+      fs.writeFileSync(alertsPath, JSON.stringify(existingActivity, null, 2));
+    } catch (e) {
+      console.error("Failed to log activity:", e);
+    }
+
     return NextResponse.json({ success: true, message: 'File uploaded successfully' });
   } catch (error: any) {
     console.error("Upload Error:", error);

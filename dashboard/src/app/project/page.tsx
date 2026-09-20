@@ -39,6 +39,39 @@ export default function ProjectOverview() {
   const [uploading, setUploading] = useState(false);
   const [shareLink, setShareLink] = useState<string | null>(null);
 
+  // Inline Editor State
+  const [editingFile, setEditingFile] = useState<{name: string, content: string} | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+
+  const openEditor = async (filename: string) => {
+    try {
+      const res = await fetch(`/api/download?user=${currentUser}&file=${filename}&action=view`);
+      const text = await res.text();
+      setEditingFile({ name: filename, content: text });
+    } catch (err) {
+      console.error("Failed to load file for editing", err);
+    }
+  };
+
+  const saveEditor = async () => {
+    if (!editingFile) return;
+    setIsSaving(true);
+    
+    // Convert string back to a File object for the upload API
+    const file = new File([editingFile.content], editingFile.name, { type: "text/plain" });
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("user", currentUser);
+
+    try {
+      await fetch('/api/upload', { method: 'POST', body: formData });
+      setEditingFile(null); // close editor on success
+    } catch (err) {
+      console.error(err);
+    }
+    setIsSaving(false);
+  };
+
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0) return;
     const file = e.target.files[0];
@@ -195,13 +228,12 @@ export default function ProjectOverview() {
                 <li key={f} className="flex justify-between items-center group">
                   <span>📄 {f}</span>
                   <div className="opacity-0 group-hover:opacity-100 flex gap-2">
-                    <a 
-                      href={`/api/download?user=${currentUser}&file=${f}&action=view`}
-                      target="_blank"
+                    <button 
+                      onClick={() => openEditor(f)}
                       className="text-xs bg-slate-100 hover:bg-purple-100 text-purple-600 px-2 py-1 rounded transition-all"
                     >
-                      View
-                    </a>
+                      Edit Inline
+                    </button>
                     <a 
                       href={`/api/download?user=${currentUser}&file=${f}&action=download`}
                       className="text-xs bg-slate-100 hover:bg-green-100 text-green-600 px-2 py-1 rounded transition-all"
@@ -222,6 +254,38 @@ export default function ProjectOverview() {
         </div>
       </div>
     </div>
+    )}
+
+    {/* INLINE TEXT EDITOR MODAL */}
+    {editingFile && (
+      <div className="fixed inset-0 bg-slate-900 bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl flex flex-col h-[600px]">
+          <div className="flex justify-between items-center p-4 border-b border-slate-200">
+            <h3 className="font-bold text-slate-800">Editing: {editingFile.name}</h3>
+            <button onClick={() => setEditingFile(null)} className="text-slate-400 hover:text-slate-600">✕</button>
+          </div>
+          <textarea 
+            value={editingFile.content}
+            onChange={(e) => setEditingFile({...editingFile, content: e.target.value})}
+            className="flex-1 w-full p-4 font-mono text-sm text-slate-700 bg-slate-50 focus:outline-none resize-none"
+          />
+          <div className="p-4 border-t border-slate-200 flex justify-end gap-3 bg-slate-50 rounded-b-lg">
+            <button 
+              onClick={() => setEditingFile(null)}
+              className="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-200 rounded transition-colors"
+            >
+              Cancel
+            </button>
+            <button 
+              onClick={saveEditor}
+              disabled={isSaving}
+              className="px-6 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 rounded transition-colors shadow-sm"
+            >
+              {isSaving ? "Saving to Vault..." : "Save Securely"}
+            </button>
+          </div>
+        </div>
+      </div>
     )}
 
   </div>
