@@ -13,12 +13,14 @@ export async function POST(request: Request) {
     }
 
     // 1. Create the user in Nextcloud via Docker OCC
-    const cmdCreate = `docker compose exec -e OC_PASS="${password}" app php occ user:add --password-from-env --display-name="${displayName || username}" ${username}`;
+    // Note: MUST run as www-data, otherwise Nextcloud rejects it.
+    const cmdCreate = `docker compose exec --user www-data -e OC_PASS="${password}" app php occ user:add --password-from-env --display-name="${displayName || username}" ${username}`;
     await execAsync(cmdCreate, { cwd: '../infra' });
 
     return NextResponse.json({ success: true, message: 'Account created successfully in Nextcloud!' });
   } catch (error: any) {
-    console.error(error);
-    return NextResponse.json({ error: error.message || 'Failed to create account' }, { status: 500 });
+    console.error("Registration Error occurred");
+    // NEVER leak the raw error.message because it contains the executed command string and password!
+    return NextResponse.json({ error: 'Failed to create account in Nextcloud. Please try again.' }, { status: 500 });
   }
 }
