@@ -194,12 +194,27 @@ export default function ProjectOverview() {
               {personalFiles.map(f => (
                 <li key={f} className="flex justify-between items-center group">
                   <span>📄 {f}</span>
-                  <button 
-                    onClick={() => handleShare(f)}
-                    className="opacity-0 group-hover:opacity-100 text-xs bg-slate-100 hover:bg-blue-100 text-blue-600 px-2 py-1 rounded transition-all"
-                  >
-                    Share External
-                  </button>
+                  <div className="opacity-0 group-hover:opacity-100 flex gap-2">
+                    <a 
+                      href={`/api/download?user=${currentUser}&file=${f}&action=view`}
+                      target="_blank"
+                      className="text-xs bg-slate-100 hover:bg-purple-100 text-purple-600 px-2 py-1 rounded transition-all"
+                    >
+                      View
+                    </a>
+                    <a 
+                      href={`/api/download?user=${currentUser}&file=${f}&action=download`}
+                      className="text-xs bg-slate-100 hover:bg-green-100 text-green-600 px-2 py-1 rounded transition-all"
+                    >
+                      Download
+                    </a>
+                    <button 
+                      onClick={() => handleShare(f)}
+                      className="text-xs bg-slate-100 hover:bg-blue-100 text-blue-600 px-2 py-1 rounded transition-all"
+                    >
+                      Share
+                    </button>
+                  </div>
                 </li>
               ))}
             </ul>
