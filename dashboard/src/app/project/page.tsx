@@ -6,8 +6,12 @@ export default function ProjectOverview() {
   const [alphaFiles, setAlphaFiles] = useState<string[]>([]);
   const [betaFiles, setBetaFiles] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentUser, setCurrentUser] = useState<string>("");
 
   useEffect(() => {
+    const user = localStorage.getItem("demoUser") || "admin";
+    setCurrentUser(user);
+
     Promise.all([
       fetch('/api/project?user=dr_amara').then(res => res.json()),
       fetch('/api/project?user=dr_sarah').then(res => res.json())
@@ -18,11 +22,15 @@ export default function ProjectOverview() {
     });
   }, []);
 
+  const showAlpha = currentUser === "admin" || currentUser === "dr_amara" || currentUser === "student_musa" || currentUser === "researcher_bello";
+  const showBeta = currentUser === "admin" || currentUser === "dr_sarah" || currentUser === "student_john";
+
   return (
     <div className="max-w-4xl pb-12">
       <h1 className="text-3xl font-bold mb-8 text-slate-800">Project Overview</h1>
       
       {/* PROJECT ALPHA */}
+      {showAlpha && (
       <div className="bg-white p-8 rounded-lg shadow-sm border border-slate-200 mb-8">
         <h2 className="text-xl font-semibold mb-2 text-slate-700">Project Alpha</h2>
         <p className="text-slate-500 mb-8">Active Research Data & Drafts</p>
@@ -58,8 +66,10 @@ export default function ProjectOverview() {
           </div>
         </div>
       </div>
+      )}
 
       {/* PROJECT BETA */}
+      {showBeta && (
       <div className="bg-white p-8 rounded-lg shadow-sm border border-slate-200">
         <h2 className="text-xl font-semibold mb-2 text-slate-700">Project Beta</h2>
         <p className="text-slate-500 mb-8">Clinical Trial Analytics</p>
@@ -91,6 +101,7 @@ export default function ProjectOverview() {
           </div>
         </div>
       </div>
+      )}
 
     </div>
   );

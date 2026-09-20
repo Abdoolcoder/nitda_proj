@@ -1,20 +1,27 @@
 "use client";
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
 
 export default function Sidebar() {
   const [user, setUser] = useState("admin");
+  const pathname = usePathname();
 
   useEffect(() => {
     setUser(localStorage.getItem("demoUser") || "admin");
   }, []);
 
-  const isAdmin = user === "admin" || user === "dr_amara";
+  // Hide the sidebar completely on login and register pages
+  if (pathname === "/" || pathname === "/register") {
+    return null;
+  }
+
+  const isAdmin = user === "admin";
 
   return (
     <aside className="w-64 bg-white border-r border-slate-200 flex flex-col p-6 shadow-sm">
-      <div className="font-bold text-lg mb-8 text-blue-900 tracking-tight">
-        {isAdmin ? "Admin Dashboard" : "Researcher Portal"}
+      <div className="font-bold text-lg mb-8 text-blue-900 tracking-tight leading-tight">
+        {isAdmin ? "Security Admin Dashboard" : "Project Dashboard"}
       </div>
       
       <div className="mb-6 pb-4 border-b border-slate-100">
