@@ -24,26 +24,40 @@ export async function GET(request: Request) {
     // Copy file from docker to temp
     await execAsync(`docker compose cp app:"${sourcePath}" "${tempFilePath}"`, { cwd: '../infra' });
 
-    // Log the download event as a Security Alert!
+    // Log the event securely
     try {
-      const alert = {
-        user,
-        timestamp: new Date().toISOString(),
-        rule_triggered: action === 'download' ? 'MASS_DOWNLOAD_ATTEMPT' : 'UNAUTHORIZED_VIEW_ATTEMPT',
-        evidence: `User ${user} attempted to ${action} file: ${filename} via Dashboard API.`
-      };
-      const alertsPath = path.join(process.cwd(), '..', 'infra', 'nextjs-alerts.json');
-      let existingAlerts = [];
-      try {
-        const fileData = await readFile(alertsPath, 'utf8');
-        existingAlerts = JSON.parse(fileData);
-      } catch (e) {
-        // file doesn't exist yet
+      const timestamp = new Date().toISOString();
+      const fs = require('fs');
+
+      if (action === 'download') {
+        // High Severity Alert
+        const alert = {
+          user,
+          timestamp,
+          rule_triggered: 'DATA_EXFILTRATION_ATTEMPT',
+          evidence: `User ${user} downloaded raw file: ${filename} to their local machine.`
+        };
+        const alertsPath = path.join(process.cwd(), '..', 'infra', 'nextjs-alerts.json');
+        let existingAlerts = [];
+        if (fs.existsSync(alertsPath)) existingAlerts = JSON.parse(fs.readFileSync(alertsPath, 'utf8'));
+        existingAlerts.unshift(alert);
+        fs.writeFileSync(alertsPath, JSON.stringify(existingAlerts, null, 2));
+      } else {
+        // Standard Activity Log (View / Edit)
+        const activity = {
+          user,
+          type: 'file_viewed',
+          subject: `Opened file in Secure Inline Editor: ${filename}`,
+          datetime: timestamp
+        };
+        const activityPath = path.join(process.cwd(), '..', 'infra', 'nextjs-activity.json');
+        let existingActivity = [];
+        if (fs.existsSync(activityPath)) existingActivity = JSON.parse(fs.readFileSync(activityPath, 'utf8'));
+        existingActivity.unshift(activity);
+        fs.writeFileSync(activityPath, JSON.stringify(existingActivity, null, 2));
       }
-      existingAlerts.unshift(alert); // add to top
-      await require('fs').promises.writeFile(alertsPath, JSON.stringify(existingAlerts, null, 2));
     } catch (e) {
-      console.error("Failed to log alert:", e);
+      console.error("Failed to log event:", e);
     }
 
     // Read the file

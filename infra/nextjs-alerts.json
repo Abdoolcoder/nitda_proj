@@ -1,6 +1,12 @@
 [
   {
     "user": "student_musa",
+    "timestamp": "2026-09-20T21:30:01.036Z",
+    "rule_triggered": "UNAUTHORIZED_VIEW_ATTEMPT",
+    "evidence": "User student_musa attempted to view file: Aaaaa.pdf via Dashboard API."
+  },
+  {
+    "user": "student_musa",
     "timestamp": "2026-09-20T21:22:12.649Z",
     "rule_triggered": "UNAUTHORIZED_VIEW_ATTEMPT",
     "evidence": "User student_musa attempted to view file: projectXeta via Dashboard API."
