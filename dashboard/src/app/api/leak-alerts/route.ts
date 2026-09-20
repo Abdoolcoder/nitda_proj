@@ -10,8 +10,19 @@ export async function GET() {
     const scriptPath = path.join(process.cwd(), '..', 'scripts', 'leak_detection.py');
     const { stdout } = await execAsync(`python "${scriptPath}"`);
     const data = JSON.parse(stdout);
+    
+    // Merge Next.js custom API alerts
+    let apiAlerts: any[] = [];
+    try {
+      const fs = require('fs');
+      const alertsPath = path.join(process.cwd(), '..', 'infra', 'nextjs-alerts.json');
+      if (fs.existsSync(alertsPath)) {
+        apiAlerts = JSON.parse(fs.readFileSync(alertsPath, 'utf8'));
+      }
+    } catch(e) {}
+
     return NextResponse.json({ 
-      alerts: data.alerts, 
+      alerts: [...apiAlerts, ...(data.alerts || [])], 
       raw_activity: data.raw_activity 
     });
   } catch (error) {

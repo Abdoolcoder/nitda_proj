@@ -24,6 +24,28 @@ export async function GET(request: Request) {
     // Copy file from docker to temp
     await execAsync(`docker compose cp app:"${sourcePath}" "${tempFilePath}"`, { cwd: '../infra' });
 
+    // Log the download event as a Security Alert!
+    try {
+      const alert = {
+        user,
+        timestamp: new Date().toISOString(),
+        rule_triggered: action === 'download' ? 'MASS_DOWNLOAD_ATTEMPT' : 'UNAUTHORIZED_VIEW_ATTEMPT',
+        evidence: `User ${user} attempted to ${action} file: ${filename} via Dashboard API.`
+      };
+      const alertsPath = path.join(process.cwd(), '..', 'infra', 'nextjs-alerts.json');
+      let existingAlerts = [];
+      try {
+        const fileData = await readFile(alertsPath, 'utf8');
+        existingAlerts = JSON.parse(fileData);
+      } catch (e) {
+        // file doesn't exist yet
+      }
+      existingAlerts.unshift(alert); // add to top
+      await require('fs').promises.writeFile(alertsPath, JSON.stringify(existingAlerts, null, 2));
+    } catch (e) {
+      console.error("Failed to log alert:", e);
+    }
+
     // Read the file
     const fileBuffer = await readFile(tempFilePath);
     
