@@ -36,10 +36,55 @@ export default function ProjectOverview() {
   const showBeta = currentUser === "admin" || currentUser === "dr_sarah" || currentUser === "student_john";
   const showPersonal = currentUser !== "admin";
 
+  const [uploading, setUploading] = useState(false);
+  const [shareLink, setShareLink] = useState<string | null>(null);
+
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+    const file = e.target.files[0];
+    
+    setUploading(true);
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("user", currentUser);
+
+    try {
+      await fetch('/api/upload', { method: 'POST', body: formData });
+      // Refresh the files
+      const res = await fetch(`/api/project?user=${currentUser}`);
+      const data = await res.json();
+      setPersonalFiles(data.files || []);
+    } catch (err) {
+      console.error(err);
+    }
+    setUploading(false);
+  };
+
+  const handleShare = async (filename: string) => {
+    try {
+      const res = await fetch('/api/share-file', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user: currentUser, filename })
+      });
+      const data = await res.json();
+      if (data.url) setShareLink(`${filename}: ${data.url}`);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <div className="max-w-4xl pb-12">
       <h1 className="text-3xl font-bold mb-8 text-slate-800">Project Overview</h1>
       
+      {shareLink && (
+        <div className="bg-green-50 border border-green-200 text-green-800 p-4 rounded mb-6 flex justify-between items-center">
+          <span className="font-medium text-sm">External Link Generated: {shareLink}</span>
+          <button onClick={() => setShareLink(null)} className="text-green-600 hover:text-green-800">✕</button>
+        </div>
+      )}
+
       {/* PROJECT ALPHA */}
       {showAlpha && (
       <div className="bg-white p-8 rounded-lg shadow-sm border border-slate-200 mb-8">
@@ -117,7 +162,15 @@ export default function ProjectOverview() {
     {/* PERSONAL WORKSPACE */}
     {showPersonal && (
     <div className="bg-white p-8 rounded-lg shadow-sm border border-slate-200 mt-8">
-      <h2 className="text-xl font-semibold mb-2 text-slate-700">Personal Workspace</h2>
+      <div className="flex justify-between items-center mb-2">
+        <h2 className="text-xl font-semibold text-slate-700">Personal Workspace</h2>
+        <div>
+          <label className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 rounded cursor-pointer transition-colors">
+            {uploading ? "Uploading..." : "Upload File"}
+            <input type="file" className="hidden" onChange={handleUpload} disabled={uploading} />
+          </label>
+        </div>
+      </div>
       <p className="text-slate-500 mb-8">Your private Nextcloud root folder</p>
       
       <div className="grid grid-cols-2 gap-8">
@@ -138,7 +191,17 @@ export default function ProjectOverview() {
              </div>
           ) : (
             <ul className="space-y-3 text-sm text-slate-600">
-              {personalFiles.map(f => <li key={f}>📄 {f}</li>)}
+              {personalFiles.map(f => (
+                <li key={f} className="flex justify-between items-center group">
+                  <span>📄 {f}</span>
+                  <button 
+                    onClick={() => handleShare(f)}
+                    className="opacity-0 group-hover:opacity-100 text-xs bg-slate-100 hover:bg-blue-100 text-blue-600 px-2 py-1 rounded transition-all"
+                  >
+                    Share External
+                  </button>
+                </li>
+              ))}
             </ul>
           )}
         </div>
